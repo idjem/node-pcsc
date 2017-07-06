@@ -1,0 +1,18 @@
+{
+  "name": "pcsc",
+  "version": "1.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "cnyks . ACS%20ACR122%200 "
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cnyks": "^1.17.2",
+    "debug": "^2.6.8",
+    "eventemitter-co": "^1.0.4",
+    "mout": "^1.0.0",
+    "nyks": "^3.19.1"
+  }
+}

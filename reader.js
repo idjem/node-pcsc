@@ -7,6 +7,9 @@ const promisify       = require('nyks/function/promisify');
 const Event           = require('eventemitter-co');
 const log             = require('debug')('nfc');
 
+const SCARD_STATE_PRESENT = 'SCARD_STATE_PRESENT';
+const SCARD_STATE_EMPTY   = 'SCARD_STATE_EMPTY';
+
 class Reader extends Event{
   constructor(reader){
     super();
@@ -30,6 +33,7 @@ class Reader extends Event{
         if ((changes & reader.SCARD_STATE_EMPTY) && (status.state & reader.SCARD_STATE_EMPTY)) {
           log("card removed");
           this.card = null;
+          this.emit(SCARD_STATE_EMPTY, this.card).catch(log);
           var disconnected = yield this.disconnect(reader.SCARD_LEAVE_CARD);
         } else if ((changes & reader.SCARD_STATE_PRESENT) && (status.state & reader.SCARD_STATE_PRESENT)) {
           log("card inserted");
@@ -39,7 +43,7 @@ class Reader extends Event{
           }  
           this.card.protocol = yield this.connect({ share_mode : reader.SCARD_SHARE_SHARED });
           log("card connected " , this.card);
-          this.emit('card', this.card).catch(log);
+          this.emit(SCARD_STATE_PRESENT, this.card).catch(log);
         }
       }
     }, this);
@@ -150,4 +154,6 @@ class Reader extends Event{
   }
 }
 
+Reader.SCARD_STATE_PRESENT = SCARD_STATE_PRESENT;
+Reader.SCARD_STATE_EMPTY   = SCARD_STATE_EMPTY;
 module.exports = Reader ;

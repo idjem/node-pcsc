@@ -6,7 +6,11 @@
   "scripts": {
     "start": "cnyks . ACS%20ACR122%200 "
   },
-  "author": "",
+  "author": "Mejdi OURIR <m.ourir@ivsweb.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/idjem/node-pcsc.git"
+  },
   "license": "ISC",
   "dependencies": {
     "cnyks": "^1.17.2",
@@ -16,4 +20,3 @@
     "nyks": "^3.19.1"
   }
 }
- 

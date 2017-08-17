@@ -27,6 +27,10 @@ class PCSC extends Event{
     });
   }
 
+  close() {
+    pcsc.close();
+  }
+
   *uid(){
     if(!this.reader)
       return console.log('no reader detect');

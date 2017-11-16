@@ -27,25 +27,25 @@ class PCSC extends Event{
     });
   }
 
-  *uid(){
+  async uid(){
     if(!this.reader)
       return console.log('no reader detect');
-    return yield this.reader.uid();
+    return await this.reader.uid();
   }
 
-  *write(start, txt){
+  async write(start, txt){
     if(!this.reader)
       return console.log('no reader detect');
     var data = Buffer.allocUnsafe(txt.length);
     data.fill(0);
     data.write(txt);
-    yield this.reader.write(start, data);
+    await this.reader.write(start, data);
   }
 
-  *read(start, length){
+  async read(start, length){
     if(!this.reader)
         return console.log('no reader detect');
-    var tag = yield this.reader.read(4, 36);
+    var tag = await this.reader.read(4, 36);
     return tag.toString('utf-8');
   }
 } 

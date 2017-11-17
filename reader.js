@@ -19,22 +19,21 @@ class Reader extends Event{
     this.disconnect = promisify(reader.disconnect, reader);
     this.transmit   = promisify(reader.transmit, reader);
  
-    reader.on('status', this.emit.bind(this, 'status'));
     reader.on('error', function(err) {
-      log('Error(', this.name, '):', err.message);
+      log(`Error( ${this.name} ): ${err.message}`);
     });
     reader.on('end', function() {
-      log('Reader',  this.name, 'removed');
+      log(`Reader ${this.name} removed`);
     });
     
-    this.on('status', function*(status){
+    reader.on('status', async (status) => {
       var changes = reader.state ^ status.state;
       if (changes) {
         if ((changes & reader.SCARD_STATE_EMPTY) && (status.state & reader.SCARD_STATE_EMPTY)) {
           log("card removed");
           this.card = null;
           this.emit(SCARD_STATE_EMPTY, this.card).catch(log);
-          var disconnected = await this.disconnect(keader.SCARD_LEAVE_CARD);
+          var disconnected = await this.disconnect(reader.SCARD_LEAVE_CARD);
         } else if ((changes & reader.SCARD_STATE_PRESENT) && (status.state & reader.SCARD_STATE_PRESENT)) {
           log("card inserted");
           this.card = {};
@@ -46,7 +45,7 @@ class Reader extends Event{
           this.emit(SCARD_STATE_PRESENT, this.card).catch(log);
         }
       }
-    }, this);
+    });
   }
 
   async write(blockNumber, data, blockSize ){
@@ -81,6 +80,13 @@ class Reader extends Event{
       throw new Error(`Write operation failed: Status code: 0x${statusCode.toString(16)}`);
     }
     return true;
+  }
+
+  async writeStr(start, txt){
+    var data = Buffer.allocUnsafe(txt.length);
+    data.fill(0);
+    data.write(txt);
+    await this.write(start, data);
   }
   
 

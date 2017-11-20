@@ -48,7 +48,7 @@ class Reader extends Event{
     });
   }
 
-  async write(blockNumber, data, blockSize ){
+  async _write(blockNumber, data, blockSize ){
     if(!this.card || !this.card.protocol)
       throw new Error('No card present !');
 
@@ -61,15 +61,14 @@ class Reader extends Event{
 
     if (data.length > blockSize) {
       const p = data.length / blockSize;
-      const commands = [];
       for (let i = 0; i < p; i++) {
           const block = blockNumber + i;
           const start = i * blockSize;
           const end = (i + 1) * blockSize;
           const part = data.slice(start, end);
-          commands.push(this.write(block, part, blockSize));
+          await this._write(block, part, blockSize);
       }
-      return await commands;
+      return true;
     }
     // APDU CMD: Update Binary Block
     var packetHeader = new Buffer([0xff, 0xd6, 0x00, blockNumber, blockSize]);
@@ -82,11 +81,12 @@ class Reader extends Event{
     return true;
   }
 
-  async writeStr(start, txt){
+  async write(start, txt){
+    console.log
     var data = Buffer.allocUnsafe(txt.length);
     data.fill(0);
     data.write(txt);
-    await this.write(start, data);
+    await this._write(start, data);
   }
   
 
@@ -112,8 +112,12 @@ class Reader extends Event{
     return this.card;
   }
 
+  async read(start, length){
+    var tag = await this._read(start, length);
+    return tag.toString('utf-8');
+  }
 
-  async read(blockNumber, length, blockSize, packetSize) {
+  async _read(blockNumber, length, blockSize, packetSize) {
     if(!this.card || !this.card.protocol)
       throw new Error('No card present !');
 
@@ -125,11 +129,11 @@ class Reader extends Event{
 			const commands = [];
 			for (let i = 0; i < p; i++) {
 				const block = blockNumber + ((i * packetSize) / blockSize);
-				const size = ((i + 1) * packetSize) < length ? packetSize : length - ((i) * packetSize);
-				commands.push(this.read(block, size, blockSize, packetSize));
-			}
-      var result = await commands;
-      return result.join('');
+        const size = ((i + 1) * packetSize) < length ? packetSize : length - ((i) * packetSize);
+        var data = await this._read(block, size, blockSize, packetSize)
+				commands.push(data);
+      }
+      return commands.join('');
 		}
 		// APDU CMD: Read Binary Blocks
 		const packet = new Buffer([0xff, 0xb0, 0x00, blockNumber, length]);

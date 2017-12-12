@@ -23,5 +23,6 @@ _PCSC.SCARD_STATE_PRESENT = Reader.SCARD_STATE_PRESENT;
 _PCSC.SCARD_STATE_EMPTY   = Reader.SCARD_STATE_EMPTY;
 _PCSC.READER_EVENT        = READER_EVENT;
 _PCSC.PCSC_ERROR_EVENT    = PCSC_ERROR_EVENT;
+_PCSC.close               = pcsc.close.bind(pcsc);
 
 module.exports = _PCSC;

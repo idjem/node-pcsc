@@ -18,6 +18,7 @@ class Reader extends Event{
     this.connect    = promisify(reader.connect, reader);
     this.disconnect = promisify(reader.disconnect, reader);
     this.transmit   = promisify(reader.transmit, reader);
+    this.close      = reader.close.bind(reader);
 
     reader.on('error', function(err) {
       log(`Error( ${this.name} ): ${err.message}`);

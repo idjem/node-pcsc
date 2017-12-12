@@ -11,8 +11,8 @@ const PCSC_ERROR_EVENT = 'PCSC_ERROR_EVENT';
 const _PCSC = new Event();
 
 pcsc.on('reader', (reader) => {
-  var reader = new Reader(reader);
-  _PCSC.emit(READER_EVENT, reader);
+  var readerI = new Reader(reader);
+  _PCSC.emit(READER_EVENT, readerI);
 });
 
 pcsc.on('error', (err) => {
@@ -24,6 +24,4 @@ _PCSC.SCARD_STATE_EMPTY   = Reader.SCARD_STATE_EMPTY;
 _PCSC.READER_EVENT        = READER_EVENT;
 _PCSC.PCSC_ERROR_EVENT    = PCSC_ERROR_EVENT;
 
-
 module.exports = _PCSC;
-
